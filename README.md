@@ -29,4 +29,4 @@ Toutes les autres API que j'ai trouvées sur le web étaient payantes mais celle
 
 made by with love by
 
-  :://Kratos237 
+  ::/ <a href="">Daniel Uokof</a> 
