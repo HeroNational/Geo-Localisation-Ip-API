@@ -3,19 +3,19 @@
 
 <center><img src="https://github.com/Kratos237/Geo-Localisation-Ip-API/blob/master/ipIcon.png" style="width:90px; height:90px;"></center><br>
 
-# Geolocation whit Ip API
+# Geolocation by an API of Ip addresses
 
 ## HOW TO LOCATE VISITORS
 
 
-j'ai eu un souci lors du developpememnt dun site web de e-commerce. Les utilisateurs pour des raisons de confidencialite me fournissaient a chaque fois de fausses informations sur leur localisation, chose qui pour eux etait super cool mais pour les statistiques des mon application etaient tellement affreux, ce qui erronait toutes mes statististiques du genre je si je voulais savoir le nombre de visteur du cameroun, pour par exemple automatiser la livraison. 
+I had a problem while developing an e-commerce site. The users for privacy reasons gave me false information about their location every time, something that was super cool for them but for the statistics of my application were so horrible, which distorted all my statistics like I if I wanted to know the number of visitors from Cameroon, for example to automate delivery.
 
-## Pour cette raison, jai eu cette petite idee qui m'a ete soufflee par un ami.
-Toutes les autres API que jai trouve sur le web etaient payante mais celle ci, ne lai probablement pas, du moins jai pas encore teste pendant longtemp.
+## For this reason, I had this little idea given to me by a friend.
+All the other APIs that I found on the web were paid but this one probably does not allow it, at least I have not tested it for a long time.
 
-###Profitez-en au max, usez de vos propres connaissances.
+### Take advantage, use your own knowledge.
 
-# Geolocation whit Ip API
+# Geolocation par une API d'adresse ip
 
 ## COMMENT LOCALISER SES VISTEURS
 
@@ -29,4 +29,4 @@ Toutes les autres API que j'ai trouvées sur le web étaient payantes mais celle
 
 made by with love by
 
-  '</>'=> <a href="https://github.com/Kratos237/">Daniel Uokof</a> 
+  <span style="color:darkorage"></ </span> <a href="https://github.com/Kratos237/">Daniel Uokof</a> <span style="color:darkorage"></ </span>></span>
