@@ -1,7 +1,7 @@
 
 
 
-<center><img src="https://github.com/Kratos237/Geo-Localisation-Ip-API/blob/master/ipIcon.png" style="width:100px; height:100px;"></center>
+<center><img src="https://github.com/Kratos237/Geo-Localisation-Ip-API/blob/master/ipIcon.png" style="width:90px; height:90px;"></center><br>
 
 # Geolocation whit Ip API
 
