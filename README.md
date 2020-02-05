@@ -15,6 +15,12 @@ All the other APIs that I found on the web were paid but this one probably does 
 
 ### Take advantage, use your own knowledge.
 
+
+
+
+
+
+
 # Geolocation par une API d'adresse ip
 
 ## COMMENT LOCALISER SES VISTEURS
@@ -27,6 +33,4 @@ Toutes les autres API que j'ai trouvées sur le web étaient payantes mais celle
 ### Profitez-en, utilisez vos propres connaissances.
 
 
-made by with love by
-
-  <span style="color:darkorage"></ </span> <a href="https://github.com/Kratos237/">Daniel Uokof</a> <span style="color:darkorage"> /> </span>
+#### made by with love by <span style="color:darkorage"></ </span> <a href="https://github.com/Kratos237/">Daniel Uokof</a> <span style="color:darkorage"> /> </span>
