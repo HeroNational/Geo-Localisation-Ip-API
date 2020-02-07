@@ -1,5 +1,11 @@
-<script async defer src="https://buttons.github.io/buttons.js"></script>
-<center style="color:gray;margin-top:150px;">
+
+
+<script src='https://api.mapbox.com/mapbox-gl-js/v1.7.0/mapbox-gl.js'></script>
+<link href='https://api.mapbox.com/mapbox-gl-js/v1.7.0/mapbox-gl.css' rel='stylesheet' />
+
+<center style="color:gray;margin-top:20px;">
+	<center style="color:gray;margin-top:20px;">
+
 <?php
 // Daniel Uokof
 
@@ -23,7 +29,7 @@ function get_ip()
     {
         $ip = $_SERVER['REMOTE_ADDR'];
 	}
-	
+	isset($_GET['ip'])?$ip=$_GET['ip']:$ip;
 	//Testeur d'adresse ip.
 
 	$tabIp=explode(".",$ip);
@@ -34,7 +40,7 @@ function get_ip()
 
 	//Generateur d'adresse ip si la votre est incorrecte, si vous testez en local par exemple.
 
-	$ipDefault=mt_rand(0,100).".".mt_rand(0,240).".".mt_rand(0,100).".".mt_rand(0,240);
+	$ipDefault=mt_rand(0,192).".".mt_rand(0,240).".".mt_rand(0,100).".".mt_rand(0,240);
 	if($ipTrue==false){
 		return array("ip"=>$ipDefault,"state"=>$ipTrue);
 	}else{
@@ -57,6 +63,28 @@ function apiGeoLocalisation()
 			if($ipResponse["state"]==false){
 				echo "<br>".$message."<br><br>";
 			}
+			echo "<div id='map' style='width: 400px; height: 300px;'></div>
+
+<div id='menu'>
+	<h4>Style de carte.</h4><br><br>
+<input
+id='streets-v11'
+type='radio'
+name='rtoggle'
+value='streets'
+checked='checked'
+/>
+<label for='streets'>Rues</label>
+<input id='light-v10' type='radio' name='rtoggle' value='light' />
+<label for='light'>Claire</label>
+<input id='dark-v10' type='radio' name='rtoggle' value='dark' />
+<label for='dark'>Sombre</label>
+<input id='outdoors-v11' type='radio' name='rtoggle' value='outdoors' />
+<label for='outdoors'>Simple</label>
+<input id='satellite-v9' type='radio' name='rtoggle' value='satellite' />
+<label for='satellite'>satellite</label>
+</div>
+<br><br>";
 			echo "Le visiteur ayant l'adresse ip ".$ipResponse['ip']." est dans le pays: <span style='color:teal'>$pays ($codePays)</span>, dans la ville de <span style='color:lightcoral'>$ville.</span>, inutile de preciser que ce pays est dans le continent <span style='color:rgb(110, 6, 55)'>$geo->continent.</span>\n";
 			echo "	<br><br>
 				  	Ses coordonnes geographiques sont: <br>
@@ -65,7 +93,146 @@ function apiGeoLocalisation()
 							<li>Latitude:<span style='color:orange'> $geo->lat</span></li>
 						</ul>
 						<br>
-					Pour un plus, son fournisseur d'acces internet est <span style='color:rgb(0, 121, 26)'>$geo->isp.</span>";
+						<style>
+#menu {
+position: relative;
+background: #fff;
+padding: 10px;
+font-family: 'Open Sans', sans-serif;
+}
+</style>
+ 
+<script>
+	mapboxgl.accessToken = 'pk.eyJ1Ijoid29vdGFya292c2tpIiwiYSI6ImNrNmMzYTN2MDB4NTEza21ncjIwdHIxczEifQ.vIsFKXlEkPMKclA4KZQhLw';
+var map = new mapboxgl.Map({
+container: 'map',
+style: 'mapbox://styles/mapbox/streets-v11',
+zoom: 13,
+center: [4.899, 52.372]
+});
+ 
+var layerList = document.getElementById('menu');
+var inputs = layerList.getElementsByTagName('input');
+ 
+function switchLayer(layer) {
+var layerId = layer.target.id;
+map.setStyle('mapbox://styles/mapbox/' + layerId);
+}
+ 
+for (var i = 0; i < inputs.length; i++) {
+inputs[i].onclick = switchLayer;
+}
+</script><script>
+	mapboxgl.accessToken = 'pk.eyJ1Ijoid29vdGFya292c2tpIiwiYSI6ImNrNmMzYTN2MDB4NTEza21ncjIwdHIxczEifQ.vIsFKXlEkPMKclA4KZQhLw';
+    var map = new mapboxgl.Map({
+        container: 'map',
+        zoom: 16,
+        style: 'mapbox://styles/mapbox/streets-v11',
+		center: [".$geo->lon.",".$geo->lat.", -0.47],
+    });
+
+    var size = 200;
+
+    // implementation of CustomLayerInterface to draw a pulsing dot icon on the map
+    // see https://docs.mapbox.com/mapbox-gl-js/api/#customlayerinterface for more info
+    var pulsingDot = {
+        width: size,
+        height: size,
+        data: new Uint8Array(size * size * 4),
+
+        // get rendering context for the map canvas when layer is added to the map
+        onAdd: function() {
+            var canvas = document.createElement('canvas');
+            canvas.width = this.width;
+            canvas.height = this.height;
+            this.context = canvas.getContext('2d');
+        },
+
+        // called once before every frame where the icon will be used
+        render: function() {
+            var duration = 1000;
+            var t = (performance.now() % duration) / duration;
+
+            var radius = (size / 2) * 0.3;
+            var outerRadius = (size / 2) * 0.7 * t + radius;
+            var context = this.context;
+
+            // draw outer circle
+            context.clearRect(0, 0, this.width, this.height);
+            context.beginPath();
+            context.arc(
+                this.width / 2,
+                this.height / 2,
+                outerRadius,
+                0,
+                Math.PI * 2
+            );
+            context.fillStyle = 'rgba(255, 200, 200,' + (1 - t) + ')';
+            context.fill();
+
+            // draw inner circle
+            context.beginPath();
+            context.arc(
+                this.width / 2,
+                this.height / 2,
+                radius,
+                0,
+                Math.PI * 2
+            );
+            context.fillStyle = 'rgba(255, 100, 100, 1)';
+            context.strokeStyle = 'white';
+            context.lineWidth = 2 + 4 * (1 - t);
+            context.fill();
+            context.stroke();
+
+            // update this image's data with data from the canvas
+            this.data = context.getImageData(
+                0,
+                0,
+                this.width,
+                this.height
+            ).data;
+
+            // continuously repaint the map, resulting in the smooth animation of the dot
+            map.triggerRepaint();
+
+            // return `true` to let the map know that the image was updated
+            return true;
+        }
+    };
+
+    map.on('load', function() {
+        map.addImage('pulsing-dot', pulsingDot, { pixelRatio: 2 });
+
+        map.addSource('points', {
+            'type': 'geojson',
+            'data': {
+                'type': 'FeatureCollection',
+                'features': [
+                    {
+                        'type': 'Feature',
+                        'geometry': {
+                            'type': 'Point',
+                            'coordinates': [".$geo->lon.", ".$geo->lat."],
+                        }
+                    }
+                ]
+            }
+        });
+        map.addLayer({
+            'id': 'points',
+            'type': 'symbol',
+            'source': 'points',
+            'layout': {
+                'icon-image': 'pulsing-dot'
+            }
+        });
+    });
+</script>
+
+					Pour un plus, son fournisseur d'acces internet est <span style='color:rgb(0, 121, 26)'>$geo->isp.</span>
+					<br>
+					<h4 style='position:fixed;top:20px; right:20'>Rechercher une adresse ip: <form method='get'><input type='text' name='ip'><br><br><input type='submit' style='background:darkorange; color:white;border:1px solid black; box-shadow: 0px 0px 2px gray; padding:5px 10px;' value='Valider'></form></h4>";
 			
 		}else{
 			echo "Un probleme est survenu avec l'API.";	
@@ -84,9 +251,9 @@ apiGeoLocalisation();
 
 ?>
 <!-- Place this tag where you want the button to render. -->
-<a class="github-button" href="https://github.com/Kratos237/Geo-Localisation-Ip-API" data-color-scheme="no-preference: dark; light: light; dark: light;" data-size="large" data-show-count="true" aria-label="Fork ntkme/github-buttons on GitHub">Fork me on github</a>
-<style>#forkongithub a{background:black;color:darkorange;text-decoration:none;font-family:arial,sans-serif;text-align:center;font-weight:bold;padding:5px 40px;font-size:1rem;line-height:2rem;position:relative;transition:0.5s;}#forkongithub a:hover{background:black;color:teal;}#forkongithub a::before,#forkongithub a::after{content:"";width:100%;display:block;position:absolute;top:1px;left:0;height:1px;background:purple;}#forkongithub a::after{bottom:1px;top:auto;}@media screen and (min-width:800px){#forkongithub{position:absolute;display:block;top:0;right:0;width:200px;overflow:hidden;height:200px;z-index:9999;}#forkongithub a{width:200px;position:absolute;top:60px;right:-60px;transform:rotate(45deg);-webkit-transform:rotate(45deg);-ms-transform:rotate(45deg);-moz-transform:rotate(45deg);-o-transform:rotate(45deg);box-shadow:4px 4px 10px rgba(0,0,0,0.8);}}</style><span id="forkongithub"><a href="https://github.com/Kratos237/Geo-Localisation-Ip-API">Fork me on GitHub</a></span>
+
 <footer style="position:fixed; bottom:0; height:50px; width:105%; color:white;left:-5px; background:black;">
 	<span style="position:relative; top:20px">Fait avec amour par <a href="http://github.com/kratos237" target="_blank" style="color:darkorange">Daniel Uokof</a></span>
 </footer>
 </center>
+
