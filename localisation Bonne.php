@@ -1,5 +1,7 @@
 
-
+<meta charset="utf-8">
+<title>API USAGE</title>
+<link rel="shortcut icon" href="https://github.com/Kratos237/Geo-Localisation-Ip-API/raw/master/ipIcon.png" type="image/x-icon">
 <script src='https://api.mapbox.com/mapbox-gl-js/v1.7.0/mapbox-gl.js'></script>
 <link href='https://api.mapbox.com/mapbox-gl-js/v1.7.0/mapbox-gl.css' rel='stylesheet' />
 
@@ -54,14 +56,29 @@ function get_ip()
 	
 }
 
+function iso3($pays){
+    $iso=@json_decode(file_get_contents("https://restcountries.eu/rest/v2/alpha/$pays"), true);
+    return array($iso['alpha3Code'], $iso['translations']['fr']);
+}
+
+function infocovid($pays){
+    //$pays=iso3($pays);
+    $covid=json_decode(file_get_contents("https://covid-19.dataflowkit.com/v1/$pays"), true);
+    return array(true,$covid,$pays);
+}
+
+
+
+
 function apiGeoLocalisation()
 {
 	$ipResponse=get_ip();
 	$message="Votre addresse ip n'est pas valide mais mon petit generateur d'ip a cree une adresse pour vous, la voici: ".$ipResponse['ip'];
 	$geo = @json_decode(file_get_contents("http://extreme-ip-lookup.com/json/".$ipResponse['ip']/*?callback=getIP*/));
 	if(isset($geo->status)){
-		if($geo->status=="success"){
-			$pays = $geo->country;
+        if($geo->city){
+            if($geo->status=="success"){
+            $pays = $geo->country;
 			$ville = $geo->city;
 			$ipType = $geo->ipType;
 			$codePays=$geo->countryCode;
@@ -251,10 +268,26 @@ function apiGeoLocalisation()
 			
 		}else{
 			echo "Un probleme est survenu avec l'API.";	
-		}
+        }
+        // 
+        $info=infocovid(rawurlencode($pays=="United States"?"USA":$pays))[1];
+        echo "
+            <br/>
+            <div style='border:1px solid red; padding:10px 20px'>
+                Le pays <span style='color:green'>".$info['Country_text'] ."</span>
+                compte (a la date du ".$info['Last Update'].") 
+                <span style='color:orange'>".$info['Total Cases_text']."</span> cas confirmes de COVID 19 avec
+                <span style='color:green'>".$info['Total Recovered_text']."</span> gueris;
+                <span style='color:red'>".$info['Total Deaths_text']." deces;</span>
+                ".$info['Active Cases_text']." cas actifs.
+            </div>
+        ";
 		echo "<h4>Si vous voulez consulter de vous meme la reponse originale de l'api cliquez <a style='color:lightblue' href='http://extreme-ip-lookup.com/json/".$ipResponse['ip']."' target='_blank'>sur moi.</a></h4>";
+        }else{
+    		echo "<div class='notification'>Les informations renvoyees par le service sont vides donc inutilie de les renvoyer.</div>";	
+        }
 	}else{
-		echo "Cette ApI n'est pas fonctionnelle ou vous avez peut-etre une mauvaise connexion internet.";	
+		echo "<div class='notification'>Cette API n'est pas fonctionnelle ou vous avez peut-etre une mauvaise connexion internet.</div>";	
 	}
 	
 }
@@ -277,6 +310,21 @@ apiGeoLocalisation();
 </style>
 
 <style>#forkongithub a{background:black;color:darkorange;text-decoration:none;font-family:arial,sans-serif;text-align:center;font-weight:bold;padding:5px 40px;font-size:1rem;line-height:2rem;position:relative;transition:0.5s;}#forkongithub a:hover{background:black;color:teal;}#forkongithub a::before,#forkongithub a::after{content:"";width:100%;display:block;position:absolute;top:1px;left:0;height:1px;background:purple;}#forkongithub a::after{bottom:1px;top:auto;}@media screen and (min-width:800px){#forkongithub{position:absolute;display:block;top:0;right:0;width:200px;overflow:hidden;height:200px;z-index:9999;}#forkongithub a{width:200px;position:absolute;top:60px;right:-60px;transform:rotate(45deg);-webkit-transform:rotate(45deg);-ms-transform:rotate(45deg);-moz-transform:rotate(45deg);-o-transform:rotate(45deg);box-shadow:4px 4px 10px rgba(0,0,0,0.8);}}</style><span id="forkongithub"><a href="https://github.com/Kratos237/Geo-Localisation-Ip-API">Fork me on GitHub</a></span>
+
+
+<style>
+    .notification{
+        position:absolute;
+        top:50%;
+        left:50%;
+        transform:translateX(-50%);
+        font-size: 14px;
+        color: orange;
+    }
+    body, #menu{
+        background-color:black;
+    }
+</style>
 <footer style="position:fixed; bottom:0; height:50px; width:105%; color:white;left:-5px; background:black;">
 	<span style="position:relative; top:20px">Fait avec amour par <a href="http://github.com/kratos237" target="_blank" style="color:darkorange">Daniel Uokof</a></span>
 </footer>
