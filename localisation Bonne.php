@@ -15,77 +15,71 @@
 
 //04 fevrier 2020, Yaounde
 
+date_default_timezone_set("africa/douala");
 function get_ip()
 {
 
-	//-- Fonction de récupération de l'adresse IP du visiteur
-    if ( isset ( $_SERVER['HTTP_X_FORWARDED_FOR'] ) )
-    {
+    //-- Fonction de récupération de l'adresse IP du visiteur
+    if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
         $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-    }
-    elseif ( isset ( $_SERVER['HTTP_CLIENT_IP'] ) )
-    {
-        $ip  = $_SERVER['HTTP_CLIENT_IP'];
-    }
-    else
-    {
+    } elseif (isset($_SERVER['HTTP_CLIENT_IP'])) {
+        $ip = $_SERVER['HTTP_CLIENT_IP'];
+    } else {
         $ip = $_SERVER['REMOTE_ADDR'];
-	}
-	isset($_GET['ip'])?$ip=$_GET['ip']:$ip;
-	//Testeur d'adresse ip.
+    }
+    isset($_GET['ip']) ? $ip = $_GET['ip'] : $ip;
+    //Testeur d'adresse ip.
 
-	$tabIp=explode(".",$ip);
-	for($i=0;$i<4;$i++){
-		isset($tabIp[$i])?$ipTrue=true:$ipTrue=false;
-	}
+    $tabIp = explode(".", $ip);
+    for ($i = 0; $i < 4; $i++) {
+        isset($tabIp[$i]) ? $ipTrue = true : $ipTrue = false;
+    }
 
+    //Generateur d'adresse ip si la votre est incorrecte, si vous testez en local par exemple.
 
-	//Generateur d'adresse ip si la votre est incorrecte, si vous testez en local par exemple.
+    $ipDefault = mt_rand(0, 192) . "." . mt_rand(0, 240) . "." . mt_rand(0, 100) . "." . mt_rand(0, 240);
+    if ($ipTrue == false) {
 
-	$ipDefault=mt_rand(0,192).".".mt_rand(0,240).".".mt_rand(0,100).".".mt_rand(0,240);
-	if($ipTrue==false){
-        
-		return array("ip"=>$ipDefault,"state"=>$ipTrue);
-	}else{
-		if($ip!="127.0.0.1"){
-            return array("ip"=>$ip,"state"=>$ipTrue);
-        }else{
-            return array("ip"=>$ipDefault,"state"=>$ipTrue);
+        return array("ip" => $ipDefault, "state" => $ipTrue);
+    } else {
+        if ($ip != "127.0.0.1") {
+            return array("ip" => $ip, "state" => $ipTrue);
+        } else {
+            return array("ip" => $ipDefault, "state" => $ipTrue);
         }
-	}
-	
+    }
+
 }
 
-function iso3($pays){
-    $iso=@json_decode(file_get_contents("https://restcountries.eu/rest/v2/alpha/$pays"), true);
+function iso3($pays)
+{
+    $iso = @json_decode(file_get_contents("https://restcountries.eu/rest/v2/alpha/$pays"), true);
     return array($iso['alpha3Code'], $iso['translations']['fr']);
 }
 
-function infocovid($pays){
+function infocovid($pays)
+{
     //$pays=iso3($pays);
-    $covid=json_decode(file_get_contents("https://covid-19.dataflowkit.com/v1/$pays"), true);
-    return array(true,$covid,$pays);
+    $covid = json_decode(file_get_contents("https://covid-19.dataflowkit.com/v1/$pays"), true);
+    return array(true, $covid, $pays);
 }
-
-
-
 
 function apiGeoLocalisation()
 {
-	$ipResponse=get_ip();
-	$message="Votre addresse ip n'est pas valide mais mon petit generateur d'ip a cree une adresse pour vous, la voici: ".$ipResponse['ip'];
-	$geo = @json_decode(file_get_contents("http://extreme-ip-lookup.com/json/".$ipResponse['ip']/*?callback=getIP*/));
-	if(isset($geo->status)){
-        if($geo->city){
-            if($geo->status=="success"){
-            $pays = $geo->country;
-			$ville = $geo->city;
-			$ipType = $geo->ipType;
-			$codePays=$geo->countryCode;
-			if($ipResponse["state"]==false){
-				echo "<br>".$message."<br><br>";
-			}
-            echo "
+    $ipResponse = get_ip();
+    $message = "Votre addresse ip n'est pas valide mais mon petit generateur d'ip a cree une adresse pour vous, la voici: " . $ipResponse['ip'];
+    $geo = @json_decode(file_get_contents("http://extreme-ip-lookup.com/json/" . $ipResponse['ip']/*?callback=getIP*/));
+    if (isset($geo->status)) {
+        if ($geo->city) {
+            if ($geo->status == "success") {
+                $pays = $geo->country;
+                $ville = $geo->city;
+                $ipType = $geo->ipType;
+                $codePays = $geo->countryCode;
+                if ($ipResponse["state"] == false) {
+                    echo "<br>" . $message . "<br><br>";
+                }
+                echo "
                 <div id='map' style='width: 400px; height: 300px;'></div>
                 <div id='menu'>
                     <h4>Style de carte.</h4><br><br>
@@ -109,20 +103,15 @@ function apiGeoLocalisation()
                 <br><br>
             ";
 
-
-
-
-
-
-			echo "Le visiteur ayant l'adresse ip ".$ipResponse['ip']." est dans le pays: <span style='color:teal'>$pays ($codePays)</span>, dans la ville de <span style='color:lightcoral'>$ville.</span>, inutile de preciser que ce pays est dans le continent <span style='color:rgb(110, 6, 55)'>$geo->continent.</span>\n";
-			echo "	<br><br>
+                echo "Le visiteur ayant l'adresse ip " . $ipResponse['ip'] . " est dans le pays: <span style='color:teal'>$pays ($codePays)</span>, dans la ville de <span style='color:lightcoral'>$ville.</span>, inutile de preciser que ce pays est dans le continent <span style='color:rgb(110, 6, 55)'>$geo->continent.</span>\n";
+                echo "	<br><br>
 				  	Ses coordonnes geographiques sont: <br>
 						<ul>
 							<li>Longitude:<span style='color:orange'> $geo->lon</span></li>
 							<li>Latitude:<span style='color:orange'> $geo->lat</span></li>
 						</ul>
                         <br>";
-            echo "
+                echo "
                 <style>
                     #menu {
                     position: relative;
@@ -131,7 +120,7 @@ function apiGeoLocalisation()
                     font-family: 'Open Sans', sans-serif;
                     }
                 </style>
-                
+
                 <script>
                     mapboxgl.accessToken = 'pk.eyJ1Ijoid29vdGFya292c2tpIiwiYSI6ImNrNmMzYTN2MDB4NTEza21ncjIwdHIxczEifQ.vIsFKXlEkPMKclA4KZQhLw';
                 var map = new mapboxgl.Map({
@@ -140,15 +129,15 @@ function apiGeoLocalisation()
                 zoom: 14,
                 center: [4.899, 52.372]
                 });
-                
+
                 var layerList = document.getElementById('menu');
                 var inputs = layerList.getElementsByTagName('input');
-                
+
                 function switchLayer(layer) {
                 var layerId = layer.target.id;
                 map.setStyle('mapbox://styles/mapbox/' + layerId);
                 }
-                
+
                 for (var i = 0; i < inputs.length; i++) {
                 inputs[i].onclick = switchLayer;
                 }
@@ -159,7 +148,7 @@ function apiGeoLocalisation()
                         container: 'map',
                         zoom: 16,
                         style: 'mapbox://styles/mapbox/streets-v11',
-                        center: [".$geo->lon.",".$geo->lat.", -0.47],
+                        center: [" . $geo->lon . "," . $geo->lat . ", -0.47],
                     });
 
                     var size = 200;
@@ -242,7 +231,7 @@ function apiGeoLocalisation()
                                         'type': 'Feature',
                                         'geometry': {
                                             'type': 'Point',
-                                            'coordinates': [".$geo->lon.", ".$geo->lat."],
+                                            'coordinates': [" . $geo->lon . ", " . $geo->lat . "],
                                         }
                                     }
                                 ]
@@ -265,35 +254,34 @@ function apiGeoLocalisation()
                     <br>
                     <!-- bouton rechercher une adresse ip -->
 					<h4 style='position:fixed;top:20px; left:20'>Rechercher une adresse ip: <form method='get'><input type='text' name='ip'><br><br><input type='submit' style='background:darkorange; color:white;border:1px solid black; box-shadow: 0px 0px 2px gray; padding:5px 10px;' value='Valider'></form></h4>";
-			
-		}else{
-			echo "Un probleme est survenu avec l'API.";	
-        }
-        // 
-        $info=infocovid(rawurlencode($pays=="United States"?"USA":$pays))[1];
-        echo "
+
+            } else {
+                echo "Un probleme est survenu avec l'API.";
+            }
+            //
+            $info = infocovid(rawurlencode($pays == "United States" ? "USA" : $pays))[1];
+            echo "
             <br/>
             <div style='border:1px solid red; padding:10px 20px'>
-                Le pays <span style='color:green'>".$info['Country_text'] ."</span>
-                compte (a la date du ".$info['Last Update'].") 
-                <span style='color:orange'>".$info['Total Cases_text']."</span> cas confirmes de COVID 19 avec
-                <span style='color:green'>".$info['Total Recovered_text']."</span> gueris;
-                <span style='color:red'>".$info['Total Deaths_text']." deces;</span>
-                ".$info['Active Cases_text']." cas actifs.
+                Le pays <span style='color:green'>" . $info['Country_text'] . "</span>
+                compte (a la date du " . $info['Last Update'] . ")
+                <span style='color:orange'>" . $info['Total Cases_text'] . "</span> cas confirmes de COVID 19 avec
+                <span style='color:green'>" . $info['Total Recovered_text'] . "</span> gueris;
+                <span style='color:red'>" . $info['Total Deaths_text'] . " deces;</span>
+                " . $info['Active Cases_text'] . " cas actifs.
             </div>
         ";
-		echo "<h4>Si vous voulez consulter de vous meme la reponse originale de l'api cliquez <a style='color:lightblue' href='http://extreme-ip-lookup.com/json/".$ipResponse['ip']."' target='_blank'>sur moi.</a></h4>";
-        }else{
-    		echo "<div class='notification'>Les informations renvoyees par le service sont vides donc inutilie de les renvoyer.</div>";	
+            echo "<h4>Si vous voulez consulter de vous meme la reponse originale de l'api cliquez <a style='color:lightblue' href='http://extreme-ip-lookup.com/json/" . $ipResponse['ip'] . "' target='_blank'>sur moi.</a></h4>";
+        } else {
+            echo "<div class='notification'>Les informations renvoyees par le service sont vides donc inutilie de les renvoyer.</div>";
         }
-	}else{
-		echo "<div class='notification'>Cette API n'est pas fonctionnelle ou vous avez peut-etre une mauvaise connexion internet.</div>";	
-	}
-	
+    } else {
+        echo "<div class='notification'>Cette API n'est pas fonctionnelle ou vous avez peut-etre une mauvaise connexion internet.</div>";
+    }
+
 }
 
-
-//Appel de la fonction 
+//Appel de la fonction
 
 apiGeoLocalisation();
 
