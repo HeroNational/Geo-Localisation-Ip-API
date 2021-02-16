@@ -314,7 +314,7 @@ apiGeoLocalisation();
     }
 </style>
 <footer style="position:fixed; bottom:0; height:50px; width:105%; color:white;left:-5px; background:black;">
-	<span style="position:relative; top:20px">Fait avec amour par <a href="http://github.com/kratos237" target="_blank" style="color:darkorange">Daniel Uokof</a></span>
+	<span style="position:relative; top:20px">Fait avec amour par <a href="http://github.com/heronational" target="_blank" style="color:darkorange">Daniel Uokof</a></span>
 </footer>
 </center>
 
